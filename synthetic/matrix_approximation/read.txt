@@ -1,0 +1,9 @@
+(Rank-1 experiments)
+
+python rank1.py {LAMBDA_R_VAL} {TEACHER_RANK}
+
+For:
+    - LAMBDA_R_VAL = 0.7, TEACHER_RANK = 2, 4, 8, 16, 32.
+    - TEACHER_RANK = 8, LAMBDA_R_VAL = 0.7, 0.65, 0.6, 0.55.
+    
+To plot: plot_rank1.py

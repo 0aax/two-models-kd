@@ -1,0 +1,13 @@
+(Asymptotic covariance computation)
+
+python asymptotic_cov.py
+
+Then to plot: python plot_asymptotic_cov.py
+
+(Logistic regression experiments)
+
+python logistic.py {STUDENT_DIM}
+
+For STUDENT_DIM = 3, 5, 7, 9.
+
+Then to plot: python plot_logistic.py

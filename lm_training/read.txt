@@ -1,0 +1,19 @@
+(C4 experiment)
+
+Run `prepare_c4.py` which tokenizes then chunks C4 (~50% subset of train set) into 1024 token samples and adds an index for each sample. In the end we get 85250822 samples = 87.3B tokens.
+
+Run `prepare_c4_eval.py` which tokenizes and chunks C4 (a 5% subset of validation set), this is used as the validation set for the model which computes the entropy estimates.
+
+Then run `save_dataset.py` which splits off a 7.1B token subset to train the entropy model with, the remaining tokens will be used for our experiments.
+
+To train the entropy model run `train_entropy_model.py`, then generate entropy estimates using the trained model with `compute_entropy.py {shard_idx}`. In order to parallelize this computation, we divide the dataset into 12 shards and you must specify which shard to process. Then to get one file containing a mapping from index to entropy, run `merge_entropy_files.py`.
+
+Next run `save_entropy_model_indices.py`, which removes all samples that the entropy model trained on. The resulting is a sample index to entropy file, sorted according to increasing entropy is called `entropy_sorted_cleaned.csv`.
+
+Run `split_by_entropy_shards.py {shard_idx}` to split the dataset into 13 subsets of increasing entropy, we only save 5 of them. The shard_idx parameter is to allow parallelization, so the file directory looks like `c4_train_shards/shard_{shard_idx}/subset_{subset_idx}` where the subset idx represents the entropy subset.
+
+To join all of the entropy subsets from each shard, run `join_entropy_shards.py {subset_idx}`. This script also makes a train and test set, the train set has 5_987_485 examples and the test set has 29_937 examples.
+
+Then for each entropy subset, train the teacher model `train_teacher.py {subset_idx}`. This trains a GPT-2 medium model (max lr=5e-4) on the entire train split of that subset (5987485 samples = 6.12B tokens). Then we train student models on 2421875 samples = 2.48B tokens, taken from the train split of the subset as well. All models are evaluated on the test set ~30M tokens. To train the student models run
+
+train_student.py {subset_idx} {lr_exponent} {seed} "no distill"/"distill"
