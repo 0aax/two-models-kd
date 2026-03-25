@@ -17,3 +17,5 @@ To join all of the entropy subsets from each shard, run `join_entropy_shards.py 
 Then for each entropy subset, train the teacher model `train_teacher.py {subset_idx}`. This trains a GPT-2 medium model (max lr=5e-4) on the entire train split of that subset (5987485 samples = 6.12B tokens). Then we train student models on 2421875 samples = 2.48B tokens, taken from the train split of the subset as well. All models are evaluated on the test set ~30M tokens. To train the student models run
 
 train_student.py {subset_idx} {lr_exponent} {seed} "no distill"/"distill"
+
+To generate the plots based off of our wandb runs. First run `python download_c4_runs.py`, followed by `plot_c4.py`.
